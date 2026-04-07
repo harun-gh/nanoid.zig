@@ -4,13 +4,25 @@ pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
 
-    const module = b.addModule("nanoid.zig", .{
+    const nanoid = b.addModule("nanoid", .{
         .root_source_file = b.path("src/root.zig"),
         .target = target,
         .optimize = optimize,
     });
 
-    const tests = b.addTest(.{ .root_module = module });
+    const tests = b.addTest(.{
+        .name = "test",
+        .root_module = b.createModule(
+            .{
+                .root_source_file = b.path("test/root.zig"),
+                .target = target,
+                .optimize = optimize,
+                .imports = &.{
+                    .{ .name = "nanoid", .module = nanoid },
+                },
+            },
+        ),
+    });
 
     const run_tests = b.addRunArtifact(tests);
 

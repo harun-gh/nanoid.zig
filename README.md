@@ -1,71 +1,22 @@
 # nanoid.zig
 
-JavaScriptライブラリの「nanoid」をzigに移植しました  
+JavaScriptの「nanoid」をZigに移植したライブラリです  
 
 > [!NOTE]
-> ベンチマークはまだ改善の余地がありますが、可読性を優先して最適化は最小限に留めています
+> デフォルトで、辞書文字列(ランダム文字列生成においてベースとなる辞書)に `_-0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ` が設定されています  
+> (URLに使用しても問題ない文字だけに厳選していますが、記号などを組み合わせたい場合は `test/custom_dictionary.zig` を参照してください)
 
-## 使い方
+## 使い方・例
 
-辞書文字列(ランダム文字列生成においてベースとなる辞書)に `_-0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ` が設定されています  
-(URLに使用しても問題ない文字だけに厳選していますが、記号などを組み合わせたい場合は下の「例: カスタム辞書文字列を設定」を参照してください)
+以下で実行可能です
 
-```zig
-const std = @import("std");
-
-const nanoid = @import("nanoid").nanoid;
-
-var buffer: [64]u8 = undefined; // [ほしい文字数]u8にしてください
-nanoid.generate(&buffer);
-
-std.debug.print("nanoid(64文字): {s}", .{buffer[0..]});
+```bash
+zig build test
 ```
 
-### 例: カスタム辞書文字列を設定
-
-```zig
-const std = @import("std");
-
-const customAlphabet = @import("nanoid").customAlphabet;
-
-const dictionary = "_-0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!#$%&()*+,./:;<=>?@[]^{}|~";
-
-const nanoid = customAlphabet(dictionary);
-
-var buffer: [64]u8 = undefined; // [ほしい文字数]u8にしてください
-nanoid.generate(&buffer);
-
-std.debug.print("nanoid(64文字): {s}", .{buffer[0..]});
-```
-
-### 例: カスタムランダム生成器
-
-デフォルトの `@import("nanoid").nanoid` では `std.crypto.random` が採用されいますが、ほかに `Xoshiro256` などを使いたい場合に最適です
-
-> [!CAUTION]
-> `std.Random.DefaultPrng` (Xoshiro系) は高速ですが、内部状態(seed)から出力を予測できる可能性があります  
-> セッションIDや認証トークンなどのセキュリティ用途には使用せず、必ず `std.crypto.random` を使用してください
-
-```zig
-const std = @import("std");
-
-const Engine = @import("nanoid").Engine;
-const default_dictionary = @import("nanoid").default_dictionary;
-
-// Xoshiro系PRNG
-var prng: std.Random.DefaultPrng = .init(blk: {
-    var seed: u64 = undefined;
-    try std.posix.getrandom(std.mem.asBytes(&seed));
-    break :blk seed;
-});
-const rng = prng.random();
-const generator = Engine.init(default_dictionary, rng);
-
-var buffer: [64]u8 = undefined; // [ほしい文字数]u8にしてください
-generator.generate(&buffer);
-
-std.debug.print("Xoshiro256(64文字): {s}", .{buffer[0..]});
-```
+- **デフォルト**: `test/default_usage.zig`
+- **カスタム辞書文字列を設定**: `test/custom_dictionary.zig`
+- **カスタムランダム生成器**: `test/custom_rand.zig`
 
 ## 参考文献
 

@@ -1,6 +1,5 @@
 const std = @import("std");
 const print = std.debug.print;
-const testing = std.testing;
 
 pub const Engine = @import("engine.zig");
 
@@ -12,15 +11,6 @@ pub const default_dictionary = "_-0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJ
 /// outの引数におけるバッファサイズは任意です
 pub const nanoid = Engine.init(default_dictionary, CryptoRandom);
 
-pub fn customAlphabet(alphabet: []const u8) Engine {
+pub fn customDictionary(alphabet: []const u8) Engine {
     return Engine.init(alphabet, CryptoRandom);
-}
-
-test "nanoidテスト" {
-    var buffer: [64]u8 = undefined;
-    nanoid.generate(&buffer);
-
-    for (buffer) |t| {
-        try std.testing.expect(std.mem.indexOfScalar(u8, default_dictionary, t) != null);
-    }
 }

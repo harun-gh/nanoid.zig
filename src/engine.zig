@@ -25,9 +25,7 @@ pub fn init(dictionary: []const u8, rand_fn: std.Random) Engine {
 }
 
 /// Nano IDを生成します
-pub fn generate(self: *const Engine, out: []u8) void {
-    var buffer: [CACHE_LINE]u8 = undefined;
-
+pub fn generate(self: *const Engine, out: []u8, buffer: []u8) void {
     const dictionary = self.dictionary;
     const dictionary_len = dictionary.len;
     const required_len = out.len;
