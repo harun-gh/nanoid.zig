@@ -26,11 +26,11 @@ std.debug.print("nanoid(64文字): {s}", .{buffer[0..]});
 ```zig
 const std = @import("std");
 
-const Engine = @import("nanoid").Engine;
+const customAlphabet = @import("nanoid").customAlphabet;
 
 const dictionary = "_-0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!#$%&()*+,./:;<=>?@[]^{}|~";
 
-const nanoid = Engine.init(dictionary, std.crypto.random);
+const nanoid = customAlphabet(dictionary);
 
 var buffer: [64]u8 = undefined; // [ほしい文字数]u8にしてください
 nanoid.generate(&buffer);
@@ -43,7 +43,7 @@ std.debug.print("nanoid(64文字): {s}", .{buffer[0..]});
 デフォルトの `@import("nanoid").nanoid` では `std.crypto.random` が採用されいますが、ほかに `Xoshiro256` などを使いたい場合に最適です
 
 > [!CAUTION]
-> `std.Random.DefaultPrng` (Xoshiro系) は高速ですが、内部状態(seed)から出力を予測できる可能性があります
+> `std.Random.DefaultPrng` (Xoshiro系) は高速ですが、内部状態(seed)から出力を予測できる可能性があります  
 > セッションIDや認証トークンなどのセキュリティ用途には使用せず、必ず `std.crypto.random` を使用してください
 
 ```zig
@@ -59,7 +59,7 @@ var prng: std.Random.DefaultPrng = .init(blk: {
     break :blk seed;
 });
 const rng = prng.random();
-const generator = Engine.init(default_dictionary, rng); // 辞書文字列を置き換えたい場合は、
+const generator = Engine.init(default_dictionary, rng);
 
 var buffer: [64]u8 = undefined; // [ほしい文字数]u8にしてください
 generator.generate(&buffer);
