@@ -24,8 +24,6 @@ std.debug.print("nanoid(64文字): {s}", .{buffer[0..]});
 ### 例: カスタム辞書文字列を設定
 
 ```zig
-const std = @import("std");
-
 const customAlphabet = @import("nanoid").customAlphabet;
 
 const dictionary = "_-0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!#$%&()*+,./:;<=>?@[]^{}|~";
